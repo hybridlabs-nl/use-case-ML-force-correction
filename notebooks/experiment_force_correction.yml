@@ -1,0 +1,39 @@
+data:
+  exp1644:
+    path_file: ./exp1644.mat
+ml_setup:
+  targets: [
+    'force_tt_meas6[0]',
+    'force_tt_meas6[1]',
+    'force_tt_meas6[2]',
+    'force_tt_meas6[3]',
+    'force_tt_meas6[4]',
+    'force_tt_meas6[5]',
+      ]
+  predictors: [
+    'acc_tt_meas3[0]',
+    'acc_tt_meas3[1]',
+    'acc_tt_meas3[2]',
+    'acc_tb_meas3[0]',
+    'acc_tb_meas3[1]',
+    'acc_tb_meas3[2]',
+    'pos_act6[0]',
+    'pos_act6[1]',
+    'pos_act6[2]',
+    'pos_act6[3]',
+    'pos_act6[4]',
+    'pos_act6[5]',
+      ]
+  save_grid_scores: False
+  save_best_model: False
+  log_experiment: False
+  n_jobs: 2
+  use_gpu: False
+  scale_data: True
+  train_test_split_kwargs: {"train_size": 0.80, "shuffle": False, "random_state": 42}
+  data_segmentation_kwargs: {}  #{"sequence_length": 16}
+  cross_validation_kwargs: {"cv": 3}
+  model_names: {}  # models that supports multi-output regression
+  metric_names : ["neg_mean_absolute_error", "r2"]
+session_setup:
+  work_dir: "."
