@@ -19,6 +19,17 @@ measured acceleration (ACCt, ACCb) and/or position (POS).
 The ML methods are regression models and can be developed using
 [FOWT-ML](https://github.com/hybridlabs-nl/FOWT-ML) library.
 
+## Run notebooks
+
+To run the notebooks, you need to install these packages:
+
+```bash
+pip install matplotlib jupyter-lab
+pip install git+https://github.com/hybridlabs-nl/FOWT-ML.git
+```
+
+You also need dataset `data_x_wp2_202512/dataB/decay_cl`.
+
 ## Acknowledgements
 
 The use case is developed in the
