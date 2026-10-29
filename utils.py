@@ -156,3 +156,54 @@ def rotate_force(pos, Faero_est, Taero_est, i_trans=True):
         T_out = T.copy()
 
     return F_out, T_out
+
+
+def correct_force(acc_meas_tt, acc_meas_tb, Fmeas):
+    """
+    Correct measured forces using regression-based force correction.
+
+    Parameters
+    ----------
+    acc_meas_tt : (N, 3) array_like
+        Accelerations measured at the tower top at rotating frame.
+
+    acc_meas_tb : (N, 3) array_like
+        Accelerations measured at the tower base at rotating frame.
+
+    Fmeas : pandas.DataFrame
+        Measured forces and moments in the rotating frame.
+
+    Returns
+    -------
+    Faero_est : (N, 6) ndarray
+        Corrected aerodynamic forces and moments in the rotating frame.
+
+    Fcorr : (N, 6) ndarray
+        Force correction applied to the measurements in the rotating frame.
+    """
+    # force correction coefficients from regression
+    coeff = np.array([
+        [0,       0,       0,       0,       0,       0],
+        [-1.7379, -0.0422,  0.0284,  0.0037, -0.0670,  0.0011],
+        [0.0085, -1.0294,  0.0159,  0.0335, -0.0071,  0.0080],
+        [0.1019, -0.1970, -1.0387,  0.0056,  0.0021,  0.0062],
+        [-0.0958,  0.0115, -0.0731,  0.0003, -0.0330, -0.0053],
+        [-0.0184,  0.1101,  0.0268, -0.0013, -0.0052,  0.0285],
+        [-0.2792,  0.1793, -0.5547, -0.0042, -0.0126, -0.0061]
+    ])
+
+    X = np.column_stack([
+        np.ones(acc_meas_tt.shape[0]),
+        acc_meas_tt,
+        acc_meas_tb,
+    ])
+
+    Fcorr = X @ coeff
+    Faero_est = Fmeas - Fcorr
+
+    g = 9.81
+    M = 1.7
+    Fz_ofs_comp = np.array([0, 0, -M * g])
+    Faero_est[:, 0:3] = Faero_est[:, 0:3] + Fz_ofs_comp
+
+    return Faero_est, Fcorr
