@@ -21,14 +21,29 @@ The ML methods are regression models and can be developed using
 
 ## Run notebooks
 
-To run the notebooks, you need to install these packages:
+### Dependencies
+
+We use [pixi](https://pixi.prefix.dev/latest/) to handle dependencies in this project. The dependencies are defined in `pixi.toml`, including the [FOWT-ML](https://github.com/hybridlabs-nl/FOWT-ML) package.
+
+If you don't have pixi installed, you can install it with:
 
 ```bash
-pip install matplotlib jupyter-lab
-pip install git+https://github.com/hybridlabs-nl/FOWT-ML.git
+curl -fsSL https://pixi.sh/install.sh | sh
 ```
 
-You also need dataset `data_x_wp2_202512/dataB/decay_cl`.
+(see also the [pixi installation docs](https://pixi.sh/latest/installation/) for more information).
+
+From the `notebooks/` directory, you can run the notebooks with:
+
+```bash
+pixi run lab
+```
+
+Otherwise, you can use `pixi shell` to enter a shell with the dependencies installed (similar to `conda activate`), and then run the notebooks from there. 
+
+### Data
+
+You also need dataset `data_x_wp2_202512/dataB/decay_cl`, which is currently available on request from collaborators.
 
 ## Acknowledgements
 
