@@ -45,6 +45,16 @@ Otherwise, you can use `pixi shell` to enter a shell with the dependencies insta
 
 You also need dataset `data_x_wp2_202512/dataB/decay_cl`, which is currently available on request from collaborators.
 
+The notebooks expect the data in a `data/` directory at the root of this repository
+(see [paths.py](paths.py)), so that the layout is:
+
+```
+data/data_x_wp2_202512/dataB/decay_cl/
+```
+
+The `data/` directory is git-ignored. You will need to make it yourself and
+put the data there (or symlink it to wherever you keep the data).
+
 ## Acknowledgements
 
 The use case is developed in the
