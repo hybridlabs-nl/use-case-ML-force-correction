@@ -1,8 +1,16 @@
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 from sklearn.feature_selection import mutual_info_regression
 import pandas as pd
 import numpy as np
 from scipy.spatial.transform import Rotation
+
+# `data/` at the repo root, which must contain `data_x_wp2_202512/` (git-ignored)
+DATA_ROOT = Path(__file__).parent / "data"
+
+DATA_DECAY_CL = DATA_ROOT / "data_x_wp2_202512/dataB/decay_cl"
+DATA_DECAY_CL_TEST = DATA_ROOT / "data_x_wp2_202512/dataB/decay_cl_test"
 
 
 def plot_forces(df):
