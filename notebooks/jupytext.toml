@@ -1,0 +1,2 @@
+# pair every notebook here with a percent-format .py file (git-ignored, see .gitignore)
+formats = "ipynb,py:percent"

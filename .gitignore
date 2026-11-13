@@ -2,3 +2,4 @@
 pixi.lock
 data/
 __pycache__/
+notebooks/*.py

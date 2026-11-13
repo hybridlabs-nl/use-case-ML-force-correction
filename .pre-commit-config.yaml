@@ -1,0 +1,10 @@
+repos:
+  - repo: local
+    hooks:
+      # paired .py files are git-ignored, so only the .ipynb files are staged; 
+      # if the .py is newer, the sync rewrites the .ipynb and the commit stops for review
+      - id: jupytext-sync
+        name: sync notebooks with paired .py files
+        entry: pixi run jupytext --sync
+        language: system
+        files: ^notebooks/.*\.ipynb$
