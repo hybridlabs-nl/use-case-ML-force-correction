@@ -1,16 +1,30 @@
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-from sklearn.feature_selection import mutual_info_regression
-import pandas as pd
 import numpy as np
+import pandas as pd
 from scipy.spatial.transform import Rotation
+from sklearn.feature_selection import mutual_info_regression
 
 # `data/` at the repo root, which must contain `data_x_wp2_202512/` (git-ignored)
 DATA_ROOT = Path(__file__).parent / "data"
 
 DATA_DECAY_CL = DATA_ROOT / "data_x_wp2_202512/dataB/decay_cl"
 DATA_DECAY_CL_TEST = DATA_ROOT / "data_x_wp2_202512/dataB/decay_cl_test"
+
+# one row per dataB recording (number, test case, loop mode, wind speed)
+# passing it to `get_data_mfiles` adds these as columns, so each row knows its experiment
+RECORDINGS_CSV = DATA_ROOT / "data_x_wp2_202512/dataB/recordings(dataB).csv"
+
+DOFS = ["surge", "sway", "heave", "roll", "pitch", "yaw"]
+POS_COLS = [f"pos_act6[{i}]" for i in range(6)]
+USER_FORCE_COLS = [f"force_user6[{i}]" for i in range(6)]
+
+# tower-top position above the tower base [m] (`h` in `force_correction_federico.m`)
+TOWER_TOP_HEIGHT_M = 0.81
+
+# rotations are converted to the displacement they cause at the tower top, so all six POS axes (mm and deg) can be compared in mm
+DEG_TO_MM_AT_TOWER_TOP = np.deg2rad(1.0) * TOWER_TOP_HEIGHT_M * 1e3
 
 
 def plot_forces(df):
@@ -152,8 +166,7 @@ def rotate_force(pos, Faero_est, Taero_est, i_trans=True):
 
     if i_trans:
         # Tower-top position relative to tower base
-        h = 0.81
-        r0 = np.array([0.0, 0.0, h])
+        r0 = np.array([0.0, 0.0, TOWER_TOP_HEIGHT_M])
 
         # Rotate position vector for each sample
         r_fixed = R.apply(r0)
@@ -190,21 +203,25 @@ def correct_force(acc_meas_tt, acc_meas_tb, Fmeas):
         Force correction applied to the measurements in the rotating frame.
     """
     # force correction coefficients from regression
-    coeff = np.array([
-        [0,       0,       0,       0,       0,       0],
-        [-1.7379, -0.0422,  0.0284,  0.0037, -0.0670,  0.0011],
-        [0.0085, -1.0294,  0.0159,  0.0335, -0.0071,  0.0080],
-        [0.1019, -0.1970, -1.0387,  0.0056,  0.0021,  0.0062],
-        [-0.0958,  0.0115, -0.0731,  0.0003, -0.0330, -0.0053],
-        [-0.0184,  0.1101,  0.0268, -0.0013, -0.0052,  0.0285],
-        [-0.2792,  0.1793, -0.5547, -0.0042, -0.0126, -0.0061]
-    ])
+    coeff = np.array(
+        [
+            [0, 0, 0, 0, 0, 0],
+            [-1.7379, -0.0422, 0.0284, 0.0037, -0.0670, 0.0011],
+            [0.0085, -1.0294, 0.0159, 0.0335, -0.0071, 0.0080],
+            [0.1019, -0.1970, -1.0387, 0.0056, 0.0021, 0.0062],
+            [-0.0958, 0.0115, -0.0731, 0.0003, -0.0330, -0.0053],
+            [-0.0184, 0.1101, 0.0268, -0.0013, -0.0052, 0.0285],
+            [-0.2792, 0.1793, -0.5547, -0.0042, -0.0126, -0.0061],
+        ]
+    )
 
-    X = np.column_stack([
-        np.ones(acc_meas_tt.shape[0]),
-        acc_meas_tt,
-        acc_meas_tb,
-    ])
+    X = np.column_stack(
+        [
+            np.ones(acc_meas_tt.shape[0]),
+            acc_meas_tt,
+            acc_meas_tb,
+        ]
+    )
 
     Fcorr = X @ coeff
     Faero_est = Fmeas - Fcorr
